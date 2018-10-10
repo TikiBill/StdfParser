@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>LavaData.Parse.Stdf.ConsoleDumper</RootNamespace>
+    <VersionPrefix>0.0.1</VersionPrefix>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Lava-Data.Parse.Stdf\Lava-Data.Parse.Stdf.csproj" />
+    <PackageReference Include="CommandLineParser" Version="2.3.65" />
+  </ItemGroup>
+
+</Project>
