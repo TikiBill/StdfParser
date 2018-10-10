@@ -1,6 +1,6 @@
 # STDF4 Reader/Writer
 
-A library to read and write STDF4 files. This just makes a list/stream
+A c#/.NET Core library to read and write STDF4 files. This just makes a list/stream
 of records which another library or program should consume and process
 into the desired data structures.
 
