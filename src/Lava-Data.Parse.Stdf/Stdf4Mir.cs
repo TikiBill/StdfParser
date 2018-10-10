@@ -245,7 +245,7 @@ namespace LavaData.Parse.Stdf4.Records
             idx += this._valueConverter.WriteAsciiString(this.SupervisorId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
 
             // Lastly set the length, which is the first field so no + idx with the offset nor to accumulate length.
-            // Also note that the first four bytes do not count in the record lengh value.
+            // Also note that the first four bytes do not count in the record length value.
             this._valueConverter.SetUint16(idx - 4, destinationByteArray, offset: offset);
             return (ushort)idx;
         }

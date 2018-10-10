@@ -288,7 +288,7 @@ namespace LavaData.Parse.Stdf4.Records
         public ushort SetUint32(uint value, byte[] intoData, int offset = 0)
         {
             // Using shift does not work without special checks and
-            // manipulation because it does not account for endiness.
+            // manipulation because it does not account for endianness.
             byte[] bytes = BitConverter.GetBytes(value);
             if (this.ReverseBytesOnWrite)
             {
@@ -435,7 +435,7 @@ namespace LavaData.Parse.Stdf4.Records
         public (byte, byte) UshortToBytes(ushort value)
         {
             // Using shift does not work without special checks and
-            // manipulation because it does not account for endiness.
+            // manipulation because it does not account for endianness.
             byte[] bytes = BitConverter.GetBytes(value);
             if (this.ReverseBytesOnWrite)
             {
