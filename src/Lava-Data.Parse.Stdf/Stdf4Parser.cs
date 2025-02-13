@@ -95,7 +95,7 @@ namespace LavaData.Parse.Stdf4
 
         public void NoteIgnoredRecord(string stdfRecordType)
         {
-            if(this.IgnoredRecordTypeCount.ContainsKey(stdfRecordType))
+            if(!this.IgnoredRecordTypeCount.ContainsKey(stdfRecordType))
             {
                 this.IgnoredRecordTypeCount.Add(stdfRecordType, 0);
             }
