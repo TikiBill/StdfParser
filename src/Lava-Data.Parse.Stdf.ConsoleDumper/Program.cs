@@ -10,11 +10,13 @@ using Microsoft.Extensions.Logging;
 using System.CommandLine;
 using System.CommandLine.NamingConventionBinder;
 using System.Threading.Tasks;
+using LavaData.Parse.Stdf4.Records;
 
 // spell-checker:ignore stdf
 namespace LavaData.Parse.Stdf.ConsoleDumper;
 class Options
-{    public int DebugLevel { get; set; }
+{
+    public int DebugLevel { get; set; }
 
     public string InputFile { get; set; }
 
@@ -72,7 +74,7 @@ static class Program
                     {
                         OnlyParse = true,
                     };
-    
+
                     Stopwatch stopwatch = new Stopwatch();
 
                     //First, time reading the file from disk.
@@ -103,14 +105,44 @@ static class Program
                 }
                 else
                 {
-                    var stdf4Parser = new Stdf4Parser(loggerFactory, options.InputFile);
-
                     logger.LogInformation("Parsing {InputFile}", options.InputFile);
+
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
+
+                    // To stop allocation and copy as the list fills up, pick a number above
+                    // your maximum expected number of records in a file. This is not
+                    // the number of sites, rather total records.
+                    Stdf4Parser.SetInitialRecordCapacity(1_000_000);
+                    var stdf4Parser = new Stdf4Parser(loggerFactory, options.InputFile);
                     stdf4Parser.TryParse();
                     stopwatch.Stop();
                     logger.LogInformation("Time to Parse: {ElapsedTime}", stopwatch.Elapsed);
+
+                    if (!stdf4Parser.IsStateValid)
+                    {
+                        logger.LogWarning("Something went wrong parsing the file: {Message}", stdf4Parser.InvalidStateMessage);
+                    }
+
+                    if (stdf4Parser.IgnoredRecordTypeCount.Keys.Count > 0)
+                    {
+                        foreach (var kv in stdf4Parser.IgnoredRecordTypeCount)
+                        {
+                            logger.LogInformation("   RecordType: {RecordType}    {Count} records ignored.",
+                                kv.Key, kv.Value);
+                        }
+                    }
+
+                    double total = 0;
+                    foreach (var r in stdf4Parser.Records)
+                    {
+                        if (r is PTR ptr)
+                        {
+                            total += ptr.TestResult;
+                        }
+                    }
+                    logger.LogInformation("Sum of all recorded test results: {Total}", total);
+
                     logger.LogInformation("{Empty}", string.Empty);
                 }
             });
