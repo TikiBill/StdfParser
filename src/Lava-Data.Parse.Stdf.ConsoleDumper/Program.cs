@@ -7,6 +7,7 @@ using LavaData.Parse.Stdf4;
 using CommandLine;
 using System.IO;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 // spell-checker:ignore stdf
 namespace LavaData.Parse.Stdf.ConsoleDumper
@@ -31,6 +32,10 @@ namespace LavaData.Parse.Stdf.ConsoleDumper
 
         static void Main(string[] args)
         {
+            var loggerFactory = StaticProgramHelper.CreateLoggerFactory(2);
+            var logger = loggerFactory.CreateLogger<Program>();
+            logger.LogInformation("Begin...");
+
             var stdf4Parser = new Stdf4Parser();
 
             var opts = Parser.Default.ParseArguments<Options>(args)
@@ -45,17 +50,17 @@ namespace LavaData.Parse.Stdf.ConsoleDumper
 
                        if (string.IsNullOrWhiteSpace(o.InputFile))
                        {
-                           Console.WriteLine("Please provide an input file w/ -i FILE");
+                           logger.LogError("Please provide an input file w/ -i FILE");
                        }
                        else if (!File.Exists(o.InputFile))
                        {
-                           Console.WriteLine($"ERROR: Your file {o.InputFile} does not exist.");
+                           logger.LogError("ERROR: Your file {InputFile} does not exist.", o.InputFile);
                        }
                        else if (o.TimeParse)
                        {
                            if (o.Verbose)
                            {
-                               Console.WriteLine($"Parsing {o.InputFile}");
+                               logger.LogInformation("Parsing {InputFile}", o.InputFile);
                            }
                            stdf4Parser.OnlyParse = true;
                            Stopwatch stopwatch = new Stopwatch();
@@ -73,31 +78,31 @@ namespace LavaData.Parse.Stdf.ConsoleDumper
                                }
                                catch (EndOfStreamException)
                                {
-                                   //
+                                   /* Ignore, we just wanted to read from the disk without a lot of checks. */
                                }
                            }
                            stopwatch.Stop();
-                           Console.WriteLine("Time to read the file 32 bits at a time: {0}", stopwatch.Elapsed);
+                           logger.LogInformation("Time to read the file 32 bits at a time: {ElapsedTime}", stopwatch.Elapsed);
 
                            stopwatch.Reset();
                            stopwatch.Start();
                            stdf4Parser.ReadStdf4(o.InputFile);
                            stopwatch.Stop();
-                           Console.WriteLine("         Time to Parse w/o storing data: {0}", stopwatch.Elapsed);
-                           Console.WriteLine(string.Empty);
+                           logger.LogInformation("         Time to Parse w/o storing data: {ElapsedTime}", stopwatch.Elapsed);
+                           logger.BeginScope("{Empty}", string.Empty);
                        }
                        else
                        {
                            if (o.Verbose)
                            {
-                               Console.WriteLine($"Parsing {o.InputFile}");
+                               logger.LogInformation("Parsing {InputFile}", o.InputFile);
                            }
                            Stopwatch stopwatch = new Stopwatch();
                            stopwatch.Start();
                            stdf4Parser.ReadStdf4(o.InputFile);
                            stopwatch.Stop();
-                           Console.WriteLine("Time to Parse: {0}", stopwatch.Elapsed);
-                           Console.WriteLine(string.Empty);
+                           logger.LogInformation("Time to Parse: {ElapsedTime}", stopwatch.Elapsed);
+                           logger.BeginScope("{Empty}", string.Empty);
                        }
                    });
         }
