@@ -55,7 +55,6 @@ namespace LavaData.Parse.Stdf4.Records
             idx += 1;
 
             this.TestSiteNumber = recordData[offset + idx];
-            idx += 1;
 
             return this;
         }
