@@ -1,110 +1,126 @@
-﻿// Copyright (c) 2018 Bill Adams. All Rights Reserved.
+﻿// Copyright (c) 2025 Bill Adams. All Rights Reserved.
 // Bill Adams licenses this file to you under the MIT license.
 // See the license.txt file in the project root for more information.
 
 using System;
 using LavaData.Parse.Stdf4;
-using CommandLine;
 using System.IO;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
+using System.CommandLine;
+using System.CommandLine.NamingConventionBinder;
+using System.Threading.Tasks;
 
 // spell-checker:ignore stdf
-namespace LavaData.Parse.Stdf.ConsoleDumper
+namespace LavaData.Parse.Stdf.ConsoleDumper;
+class Options
+{    public int DebugLevel { get; set; }
+
+    public string InputFile { get; set; }
+
+    public bool TimeParse { get; set; }
+
+}
+
+static class Program
 {
-    class Options
+    static async Task<int> Main(string[] args)
     {
-        [Option('i', "input-file", Required = false, HelpText = "The file to parse")]
-        public string InputFile { get; set; }
+        var loggerFactory = StaticProgramHelper.CreateLoggerFactory(2);
+        var logger = loggerFactory.CreateLogger(nameof(Program));
+        logger.LogInformation("Begin...");
+        // https://github.com/dotnet/command-line-api/blob/main/docs
+        var rootCommand = new RootCommand
+                {
+                    new Option<int>(
+                        [ "--debug-level", "-d", "--log-level" ],
+                        getDefaultValue: () => 2,
+                        description: "0 => Errors Only, 1=> Warning, 2 => Info, 3 => Debug, 4 => Trace"),
 
-        [Option('v', "verbose", Required = false, HelpText = "Set output to verbose messages.")]
-        public bool Verbose { get; set; }
+                    new Option<string>(
+                        [ "--input-file", "-i" ],
+                        description: "Path to the STDF file to parse."),
 
-        [Option('t', "time", Required = false, HelpText = "Time parsing the file. Does not store results, useful for high-level (and questionably accurate) benchmark.")]
-        public bool TimeParse { get; set; }
+                    new Option<bool>(
+                        [ "--time", "--benchmark" ],
+                        description: "Time parsing the file. Does not store results, useful for high-level (and questionably accurate) benchmark."),
+                };
 
-        [Option('d', "debug", HelpText = "Debug level. 1 = Dump rare records (MIR, MRR, etc), 3 = Dump ALL records.")]
-        public int DebugLevel { get; set; }
-    }
+        rootCommand.Description = "Command line program for processing videos.";
+        rootCommand.Handler = CommandHandler.Create
+        (async (Options options) =>
+            {
+                await Task.CompletedTask; // Remove warning until we create async methods.
 
-    class Program
-    {
+                // Replace the logger now that we know the level.
+                loggerFactory = StaticProgramHelper.CreateLoggerFactory(options.DebugLevel);
+                logger = loggerFactory.CreateLogger(nameof(Program));
 
-        static void Main(string[] args)
+                var stdf4Parser = new Stdf4Parser();
+
+                if (string.IsNullOrWhiteSpace(options.InputFile))
+                {
+                    logger.LogError("Please provide an input file w/ -i FILE");
+                }
+                else if (!File.Exists(options.InputFile))
+                {
+                    logger.LogError("ERROR: Your file {InputFile} does not exist.", options.InputFile);
+                }
+                else if (options.TimeParse)
+                {
+                    logger.LogInformation("Parsing {InputFile}", options.InputFile);
+                    stdf4Parser.OnlyParse = true;
+                    Stopwatch stopwatch = new Stopwatch();
+
+                    //First, time reading the file from disk.
+                    stopwatch.Start();
+                    using (BinaryReader reader = new BinaryReader(File.Open(options.InputFile, FileMode.Open)))
+                    {
+                        try
+                        {
+                            while (true)
+                            {
+                                reader.ReadInt32();
+                            }
+                        }
+                        catch (EndOfStreamException)
+                        {
+                            /* Ignore, we just wanted to read from the disk without a lot of checks. */
+                        }
+                    }
+                    stopwatch.Stop();
+                    logger.LogInformation("Time to read the file 32 bits at a time: {ElapsedTime}", stopwatch.Elapsed);
+
+                    stopwatch.Reset();
+                    stopwatch.Start();
+                    stdf4Parser.ReadStdf4(options.InputFile);
+                    stopwatch.Stop();
+                    logger.LogInformation("         Time to Parse w/o storing data: {ElapsedTime}", stopwatch.Elapsed);
+                    logger.LogInformation("{Empty}", string.Empty);
+                }
+                else
+                {
+                    logger.LogInformation("Parsing {InputFile}", options.InputFile);
+                    Stopwatch stopwatch = new Stopwatch();
+                    stopwatch.Start();
+                    stdf4Parser.ReadStdf4(options.InputFile);
+                    stopwatch.Stop();
+                    logger.LogInformation("Time to Parse: {ElapsedTime}", stopwatch.Elapsed);
+                    logger.LogInformation("{Empty}", string.Empty);
+                }
+            });
+
+        int returnCode = 0;
+        try
         {
-            var loggerFactory = StaticProgramHelper.CreateLoggerFactory(2);
-            var logger = loggerFactory.CreateLogger<Program>();
-            logger.LogInformation("Begin...");
-
-            var stdf4Parser = new Stdf4Parser();
-
-            var opts = Parser.Default.ParseArguments<Options>(args)
-                   .WithParsed<Options>(o =>
-                   {
-                       if (o.Verbose)
-                       {
-                           stdf4Parser.Verbose = o.Verbose;
-                       }
-
-                       stdf4Parser.DebugLevel = o.DebugLevel;
-
-                       if (string.IsNullOrWhiteSpace(o.InputFile))
-                       {
-                           logger.LogError("Please provide an input file w/ -i FILE");
-                       }
-                       else if (!File.Exists(o.InputFile))
-                       {
-                           logger.LogError("ERROR: Your file {InputFile} does not exist.", o.InputFile);
-                       }
-                       else if (o.TimeParse)
-                       {
-                           if (o.Verbose)
-                           {
-                               logger.LogInformation("Parsing {InputFile}", o.InputFile);
-                           }
-                           stdf4Parser.OnlyParse = true;
-                           Stopwatch stopwatch = new Stopwatch();
-
-                           //First, time reading the file from disk.
-                           stopwatch.Start();
-                           using (BinaryReader reader = new BinaryReader(File.Open(o.InputFile, FileMode.Open)))
-                           {
-                               try
-                               {
-                                   while (true)
-                                   {
-                                       reader.ReadInt32();
-                                   }
-                               }
-                               catch (EndOfStreamException)
-                               {
-                                   /* Ignore, we just wanted to read from the disk without a lot of checks. */
-                               }
-                           }
-                           stopwatch.Stop();
-                           logger.LogInformation("Time to read the file 32 bits at a time: {ElapsedTime}", stopwatch.Elapsed);
-
-                           stopwatch.Reset();
-                           stopwatch.Start();
-                           stdf4Parser.ReadStdf4(o.InputFile);
-                           stopwatch.Stop();
-                           logger.LogInformation("         Time to Parse w/o storing data: {ElapsedTime}", stopwatch.Elapsed);
-                           logger.BeginScope("{Empty}", string.Empty);
-                       }
-                       else
-                       {
-                           if (o.Verbose)
-                           {
-                               logger.LogInformation("Parsing {InputFile}", o.InputFile);
-                           }
-                           Stopwatch stopwatch = new Stopwatch();
-                           stopwatch.Start();
-                           stdf4Parser.ReadStdf4(o.InputFile);
-                           stopwatch.Stop();
-                           logger.LogInformation("Time to Parse: {ElapsedTime}", stopwatch.Elapsed);
-                           logger.BeginScope("{Empty}", string.Empty);
-                       }
-                   });
+            // Parse the incoming args and invoke the handler
+            returnCode = await rootCommand.InvokeAsync(args);
         }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Got an exception: {ExceptionMessage}", ex.Message);
+        }
+
+        return returnCode;
     }
 }

@@ -5,15 +5,16 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>LavaData.Parse.Stdf.ConsoleDumper</RootNamespace>
-    <VersionPrefix>0.0.2</VersionPrefix>
+    <VersionPrefix>0.0.3</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="System.CommandLine" Version="2.0.0-*" />
+    <PackageReference Include="System.CommandLine.NamingConventionBinder" Version="2.0.0-*" />
     <ProjectReference Include="..\Lava-Data.Parse.Stdf\Lava-Data.Parse.Stdf.csproj" />
-    <PackageReference Include="CommandLineParser" Version="2.3.65" />
   </ItemGroup>
 
 </Project>
