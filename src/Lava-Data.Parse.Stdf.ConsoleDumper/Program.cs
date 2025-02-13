@@ -8,7 +8,8 @@ using CommandLine;
 using System.IO;
 using System.Diagnostics;
 
-namespace LavaData.Parse.Stdf.ConsoleDumpper
+// spell-checker:ignore stdf
+namespace LavaData.Parse.Stdf.ConsoleDumper
 {
     class Options
     {
