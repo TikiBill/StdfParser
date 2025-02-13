@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Bill Adams. All Rights Reserved.
+// Copyright (c) 2025 Bill Adams. All Rights Reserved.
 // Bill Adams licenses this file to you under the MIT license.
 // See the license.txt file in the project root for more information.
 
@@ -6,11 +6,18 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using LavaData.Parse.Stdf4.Records;
+using Microsoft.Extensions.Logging;
 
+#pragma warning disable S125 // remove commented out code.
+#pragma warning disable IDE0290 // Use primary constructor
+
+// spell-checker:ignore stdf eose
 namespace LavaData.Parse.Stdf4
 {
     public class Stdf4Parser
     {
+        private readonly ILogger _logger;
+
         // Remember, readonly here means we cannot assign to a different
         // two bytes, but we can change the values within.
         private readonly byte[] _twoBytes = new byte[2];
@@ -30,7 +37,14 @@ namespace LavaData.Parse.Stdf4
         /// than the common file you'll be parsing to avoid
         /// the increase capacity/copy cycle.
         /// </summary>
-        public int InitialListCapacity { get; set; } = 1_000_000;
+        private static int _initialListCapacity = 1_000_000;
+
+        public static void SetInitialRecordCapacity(int newCapacity)
+        {
+            _initialListCapacity = newCapacity;
+        }
+
+        public List<Stdf4Record> Records { get; }
 
         public bool Verbose { get; set; } = false;
 
@@ -52,45 +66,60 @@ namespace LavaData.Parse.Stdf4
             }
         }
 
-        public List<Stdf4Record> ReadStdf4(string inputFile)
+        public string InputFile { get; }
+        public bool IsStateValid { get; private set; }
+        public string? InvalidStateMessage { get; private set; }
+
+        public Stdf4Parser(ILoggerFactory loggerFactory, string inputFile)
         {
-            if (File.Exists(inputFile))
-            {
-                if (this.Verbose)
-                {
-                    Console.WriteLine($"Opening {inputFile}");
-                }
+            this._logger = loggerFactory.CreateLogger(nameof(Stdf4Parser));
+            this.InputFile = inputFile;
+            this.Records = new(_initialListCapacity);
+            this.IsStateValid = false;
+            this.InvalidStateMessage = "Parse not called yet.";
+        }
 
-                using (BinaryReader reader = new BinaryReader(File.Open(inputFile, FileMode.Open)))
-                {
-                    return this.ReadStdf4(reader);
-                }
-            }
-            else
+        public Stdf4Parser(string inputFile)
+            : this(Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, inputFile)
+        {
+
+        }
+
+        public bool TryParse()
+        {
+            if (!File.Exists(this.InputFile))
             {
-                Console.Error.WriteLine($"Error: {inputFile} does not exist!");
+                this.IsStateValid = false;
+                this.InvalidStateMessage = "The input file does not exist.";
+                return false;
             }
 
-            return null;
+            this._logger.LogInformation("Read {InputFile}", this.InputFile);
+            try
+            {
+                using var reader = new BinaryReader(File.Open(this.InputFile, FileMode.Open));
+                return this.TryParse(reader);
+            }
+            catch (Exception ex)
+            {
+                this.IsStateValid = false;
+                this.InvalidStateMessage = $"Got an exception parsing: {ex.Message}";
+                return false;
+            }
         }
 
 
-        public List<Stdf4Record> ReadStdf4(BinaryReader reader)
+#pragma warning disable S3776 // Refactor this method to reduce its Cognitive Complexity from 55 to the 15 allowed.
+        public bool TryParse(BinaryReader reader)
         {
-            List<Stdf4Record> records;
-            if (this.OnlyParse)
-            {
-                records = null;
-            }
-            else
-            {
-                records = new List<Stdf4Record>(capacity: this.InitialListCapacity);
-            }
-
             int pos = 0;
             int recordNumber = 0;
-            Stdf4Record rec;
-            StdfValueConverter converter = new StdfValueConverter();
+            Stdf4Record? rec;
+            StdfValueConverter converter = new();
+
+            this.IsStateValid = true; // Until we have an error.
+            this.InvalidStateMessage = string.Empty;
+
             try
             {
                 ushort recordLength;
@@ -132,11 +161,11 @@ namespace LavaData.Parse.Stdf4
                     {
                         if (this.OnlyParse)
                         {
-                            var ignore_PTR = new PTR(bytes, converter);
+                            _ = new PTR(bytes, converter);
                         }
                         else
                         {
-                            records.Add(new PTR(bytes, converter));
+                            this.Records.Add(new PTR(bytes, converter));
                         }
                         continue;
                     }
@@ -144,11 +173,11 @@ namespace LavaData.Parse.Stdf4
                     {
                         if (this.OnlyParse)
                         {
-                            var ignore_PIR = new PIR(bytes, converter);
+                            _ = new PIR(bytes, converter);
                         }
                         else
                         {
-                            records.Add(new PIR(bytes, converter));
+                            this.Records.Add(new PIR(bytes, converter));
                         }
                         continue;
                     }
@@ -191,6 +220,12 @@ namespace LavaData.Parse.Stdf4
 
                             case Stdf4RecordType.PRR:
                                 rec = new PRR(bytes, converter);
+                                break;
+
+                            case Stdf4RecordType.EPS:
+                                break;
+
+                            case Stdf4RecordType.BPS:
                                 break;
 
                             case Stdf4RecordType.FAR:
@@ -262,11 +297,13 @@ namespace LavaData.Parse.Stdf4
                                 break;
 
                             default:
-                                Console.WriteLine($"  Unhandled STDF4 Record Type: {recordType} ({stdfMajorType} - {stdfMinorType}).");
+                                this.IsStateValid = false;
+                                this.InvalidStateMessage = $"Unhandled STDF4 Record Type: {recordType} ({stdfMajorType} - {stdfMinorType})";
+                                this._logger.LogError("{Message}", this.InvalidStateMessage);
                                 break;
                         }
 
-                        if (rec != null)
+                        if (rec is not null)
                         {
                             if (this._debugLevel >= 3 || (this.Verbose && stdfRecordType != 1300))
                             {
@@ -276,7 +313,7 @@ namespace LavaData.Parse.Stdf4
 
                             if (!this.OnlyParse)
                             {
-                                records.Add(rec);
+                                this.Records.Add(rec);
                             }
                         }
                     }
@@ -286,25 +323,23 @@ namespace LavaData.Parse.Stdf4
                     }
                 }
             }
-            catch (EndOfStreamException)
+            catch (EndOfStreamException eose)
             {
-                if (this.Verbose)
-                {
-                    Console.WriteLine("Read to the end of the stream!");
-                }
+#pragma warning disable S6667 // Pass exception to logging.
+                this._logger.LogTrace("Read to the end of the stream: {ExceptionMessage}", eose.Message);
+#pragma warning restore S6667
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Unhandled Exception: " + ex.Message);
-                Console.WriteLine(ex.StackTrace);
+                this.IsStateValid = false;
+                this.InvalidStateMessage = $"Unhandled exception: {ex.Message}";
+                this._logger.LogError(ex, "{Message}", this.InvalidStateMessage);
             }
 
-            if (this.Verbose)
-            {
-                Console.WriteLine($"Read {recordNumber} records.");
-            }
+            this._logger.LogDebug("Read {Count} records.", recordNumber);
 
-            return records;
+            return this.IsStateValid;
         }
+#pragma warning restore S3776 
     }
 }

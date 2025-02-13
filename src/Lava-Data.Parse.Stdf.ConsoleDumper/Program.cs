@@ -34,7 +34,7 @@ static class Program
                 {
                     new Option<int>(
                         [ "--debug-level", "-d", "--log-level" ],
-                        getDefaultValue: () => 2,
+                        getDefaultValue: () => 3,
                         description: "0 => Errors Only, 1=> Warning, 2 => Info, 3 => Debug, 4 => Trace"),
 
                     new Option<string>(
@@ -56,8 +56,6 @@ static class Program
                 loggerFactory = StaticProgramHelper.CreateLoggerFactory(options.DebugLevel);
                 logger = loggerFactory.CreateLogger(nameof(Program));
 
-                var stdf4Parser = new Stdf4Parser();
-
                 if (string.IsNullOrWhiteSpace(options.InputFile))
                 {
                     logger.LogError("Please provide an input file w/ -i FILE");
@@ -69,7 +67,12 @@ static class Program
                 else if (options.TimeParse)
                 {
                     logger.LogInformation("Parsing {InputFile}", options.InputFile);
-                    stdf4Parser.OnlyParse = true;
+
+                    var stdf4Parser = new Stdf4Parser(loggerFactory, options.InputFile)
+                    {
+                        OnlyParse = true,
+                    };
+    
                     Stopwatch stopwatch = new Stopwatch();
 
                     //First, time reading the file from disk.
@@ -93,17 +96,19 @@ static class Program
 
                     stopwatch.Reset();
                     stopwatch.Start();
-                    stdf4Parser.ReadStdf4(options.InputFile);
+                    stdf4Parser.TryParse();
                     stopwatch.Stop();
                     logger.LogInformation("         Time to Parse w/o storing data: {ElapsedTime}", stopwatch.Elapsed);
                     logger.LogInformation("{Empty}", string.Empty);
                 }
                 else
                 {
+                    var stdf4Parser = new Stdf4Parser(loggerFactory, options.InputFile);
+
                     logger.LogInformation("Parsing {InputFile}", options.InputFile);
                     Stopwatch stopwatch = new Stopwatch();
                     stopwatch.Start();
-                    stdf4Parser.ReadStdf4(options.InputFile);
+                    stdf4Parser.TryParse();
                     stopwatch.Stop();
                     logger.LogInformation("Time to Parse: {ElapsedTime}", stopwatch.Elapsed);
                     logger.LogInformation("{Empty}", string.Empty);
