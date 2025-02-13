@@ -45,6 +45,13 @@ namespace LavaData.Parse.Stdf4
             _initialListCapacity = newCapacity;
         }
 
+        /// <summary>
+        /// Some of the more esoteric record types are not handled (parsed).
+        /// The counts of those are noted in this dictionary in case one wants
+        /// some insight to such ignored records.
+        /// </summary>
+        public Dictionary<string,int> IgnoredRecordTypeCount {get;} = [];
+
         public List<Stdf4Record> Records { get; }
 
         public bool Verbose { get; set; } = false;
@@ -84,6 +91,15 @@ namespace LavaData.Parse.Stdf4
             : this(Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, inputFile)
         {
 
+        }
+
+        public void NoteIgnoredRecord(string stdfRecordType)
+        {
+            if(this.IgnoredRecordTypeCount.ContainsKey(stdfRecordType))
+            {
+                this.IgnoredRecordTypeCount.Add(stdfRecordType, 0);
+            }
+            this.IgnoredRecordTypeCount[stdfRecordType] += 1;
         }
 
         public bool TryParse()
@@ -224,9 +240,11 @@ namespace LavaData.Parse.Stdf4
                                 break;
 
                             case Stdf4RecordType.EPS:
+                                this.NoteIgnoredRecord("EPS");
                                 break;
 
                             case Stdf4RecordType.BPS:
+                                this.NoteIgnoredRecord("BPS");
                                 break;
 
                             case Stdf4RecordType.FAR:
@@ -258,13 +276,19 @@ namespace LavaData.Parse.Stdf4
                                 break;
 
                             case Stdf4RecordType.PMR:
-                                throw new Stdf4ParserException("PMR  Not Implemented");
+                                this.NoteIgnoredRecord("PMR");
+                                // throw new Stdf4ParserException("PMR  Not Implemented");
+                                break;
 
                             case Stdf4RecordType.PGR:
-                                throw new Stdf4ParserException("PGR  Not Implemented");
+                                this.NoteIgnoredRecord("PGR");
+                                // throw new Stdf4ParserException("PGR  Not Implemented");
+                                break;
 
                             case Stdf4RecordType.RDR:
-                                throw new Stdf4ParserException("RDR  Not Implemented");
+                                this.NoteIgnoredRecord("RDR");
+                                // throw new Stdf4ParserException("RDR  Not Implemented");
+                                break;
 
                             case Stdf4RecordType.SDR:
                                 rec = new SDR(bytes, converter);
@@ -284,12 +308,14 @@ namespace LavaData.Parse.Stdf4
                                 break;
 
                             case Stdf4RecordType.TSR:
+                                this.NoteIgnoredRecord("TSR");
                                 //throw new Stdf4ParserException("TSR  Not Implemented");
                                 break;
 
 
                             // Generic Data; 50-NN Records.
                             case Stdf4RecordType.GDR:
+                                this.NoteIgnoredRecord("GDR");
                                 //throw new Stdf4ParserException("GDR  Not Implemented");
                                 break;
 
@@ -299,7 +325,7 @@ namespace LavaData.Parse.Stdf4
 
                             default:
                                 this.IsStateValid = false;
-                                this.InvalidStateMessage = $"Unhandled STDF4 Record Type: {recordType} ({stdfMajorType} - {stdfMinorType})";
+                                this.InvalidStateMessage = $"Unhandled (no case statement) STDF4 Record Type: {recordType} ({stdfMajorType} - {stdfMinorType})";
                                 this._logger.LogError("{Message}", this.InvalidStateMessage);
                                 break;
                         }
