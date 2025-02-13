@@ -3,9 +3,9 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RootNamespace>LavaData.Parse.Stdf.ConsoleDumper</RootNamespace>
-    <VersionPrefix>0.0.1</VersionPrefix>
+    <VersionPrefix>0.0.2</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>
