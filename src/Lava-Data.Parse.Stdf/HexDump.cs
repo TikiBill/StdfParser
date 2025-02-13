@@ -5,6 +5,12 @@
 using System;
 using System.Text;
 
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable IDE0290 // Primary constructor
+#pragma warning disable S101 // pascal naming convention.
+#pragma warning disable S2325 // static method.
+// spell-checker:ignore stdf
+
 namespace LavaData.Util.Debug
 {
     public class HexDump

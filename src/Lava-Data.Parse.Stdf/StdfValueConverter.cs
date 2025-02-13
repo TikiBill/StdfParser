@@ -5,6 +5,7 @@
 using System;
 #pragma warning disable IDE0130 // folder structure
 #pragma warning disable S101 // pascal naming convention.
+#pragma warning disable S2325 // static method.
 // spell-checker:ignore stdf
 
 namespace LavaData.Parse.Stdf4.Records
