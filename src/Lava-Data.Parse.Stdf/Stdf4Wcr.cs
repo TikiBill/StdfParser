@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Bill Adams. All Rights Reserved.
+// Copyright (c) 2025 Bill Adams. All Rights Reserved.
 // Bill Adams licenses this file to you under the MIT license.
 // See the license.txt file in the project root for more information.
 
