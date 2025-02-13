@@ -3,7 +3,10 @@
 // See the license.txt file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable S101 // pascal naming convention.
+// spell-checker:ignore stdf
 
 // https://www.inheritdoc.io/
 
@@ -12,7 +15,7 @@ namespace LavaData.Parse.Stdf4.Records
     public class WRR : Stdf4Record
     {
         // For DI, so we can convert between big and little-endian.
-        private StdfValueConverter _valueConverter;
+        private readonly StdfValueConverter _valueConverter;
 
         public override string RecordName { get; } = "WRR";
         public override byte RecordType { get; } = 2;
@@ -26,14 +29,16 @@ namespace LavaData.Parse.Stdf4.Records
         public uint NumberAbortsDuringTesting { get; set; }
         public uint NumberGoodParts { get; set; }
         public uint NumberFunctionalParts { get; set; }
-        public string WaferId { get; set; }
-        public string FabWaferId { get; set; }
-        public string WaferFrameId { get; set; }
-        public string WaferMaskId { get; set; }
-        public string WaferDescriptionUser { get; set; }
-        public string WaferDescriptionExec { get; set; }
+        public string? WaferId { get; set; }
+        public string? FabWaferId { get; set; }
+        public string? WaferFrameId { get; set; }
+        public string? WaferMaskId { get; set; }
+        public string? WaferDescriptionUser { get; set; }
+        public string? WaferDescriptionExec { get; set; }
 
-        public WRR() { }
+        public WRR(StdfValueConverter converter){
+            this._valueConverter = converter;
+        }
 
         public WRR(ReadOnlySpan<byte> recordData, StdfValueConverter converter, int offset = 0)
         {
@@ -125,13 +130,13 @@ namespace LavaData.Parse.Stdf4.Records
             idx += this._valueConverter.SetUint32(this.NumberGoodParts, destinationByteArray, offset + idx);
             idx += this._valueConverter.SetUint32(this.NumberFunctionalParts, destinationByteArray, offset + idx);
 
-            bool havePrevoiusNull = false; // See the summary of WriteAsciiString for more info.
-            idx += this._valueConverter.WriteAsciiString(this.WaferId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.FabWaferId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.WaferFrameId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.WaferMaskId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.WaferDescriptionUser, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.WaferDescriptionExec, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
+            bool havePreviousNull = false; // See the summary of WriteAsciiString for more info.
+            idx += this._valueConverter.WriteAsciiString(this.WaferId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.FabWaferId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.WaferFrameId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.WaferMaskId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.WaferDescriptionUser, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.WaferDescriptionExec, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
 
             // Lastly set the length, which is the first field so no + idx with the offset nor to accumulate length.
             this._valueConverter.SetUint16(idx, destinationByteArray, offset: offset);

@@ -3,7 +3,10 @@
 // See the license.txt file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable S101 // pascal naming convention.
+// spell-checker:ignore stdf
 
 // https://www.inheritdoc.io/
 
@@ -12,7 +15,7 @@ namespace LavaData.Parse.Stdf4.Records
     public class WIR : Stdf4Record
     {
         // For DI, so we can convert between big and little-endian.
-        private StdfValueConverter _valueConverter;
+        private readonly StdfValueConverter _valueConverter;
 
         public override string RecordName { get; } = "WIR";
         public override byte RecordType { get; } = 2;
@@ -21,9 +24,12 @@ namespace LavaData.Parse.Stdf4.Records
         public byte TestHeadNumber { get; set; }
         public byte SiteGroupNumber { get; set; }
         public uint FirstPartTestedTs { get; set; }
-        public string WaferId { get; set; }
+        public string? WaferId { get; set; }
 
-        public WIR() { }
+
+        public WIR(StdfValueConverter converter){
+            this._valueConverter = converter;
+        }
 
         public WIR(ReadOnlySpan<byte> recordData, StdfValueConverter converter, int offset = 0)
         {

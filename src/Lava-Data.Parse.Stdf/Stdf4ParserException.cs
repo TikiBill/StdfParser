@@ -5,10 +5,11 @@
 using System;
 using System.Runtime.Serialization;
 
+// spell-checker:ignore stdf
 namespace LavaData.Parse.Stdf4
 {
     [Serializable]
-    internal class Stdf4ParserException : Exception
+    public class Stdf4ParserException : Exception
     {
         public Stdf4ParserException()
         {

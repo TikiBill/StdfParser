@@ -3,7 +3,10 @@
 // See the license.txt file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable S101 // pascal naming convention.
+// spell-checker:ignore stdf
 
 // https://www.inheritdoc.io/
 
@@ -12,7 +15,7 @@ namespace LavaData.Parse.Stdf4.Records
     public class MRR : Stdf4Record
     {
         // For DI, so we can convert between big and little-endian.
-        private StdfValueConverter _valueConverter;
+        private readonly StdfValueConverter _valueConverter;
 
         public override string RecordName { get; } = "MRR";
         public override byte RecordType { get; } = 1;
@@ -20,10 +23,12 @@ namespace LavaData.Parse.Stdf4.Records
 
         public uint LastPartTestedTs { get; set; }
         public char? LotDispositionCode { get; set; } = null; //Sigh, it can be missing.
-        public string LotDescriptionUser { get; set; }
-        public string LotDescriptionExec { get; set; }
+        public string? LotDescriptionUser { get; set; }
+        public string? LotDescriptionExec { get; set; }
 
-        public MRR() { }
+        public MRR(StdfValueConverter converter){
+            this._valueConverter = converter;
+        }
 
         public MRR(ReadOnlySpan<byte> recordData, StdfValueConverter converter, int offset = 0)
         {
@@ -78,10 +83,10 @@ namespace LavaData.Parse.Stdf4.Records
             idx += this._valueConverter.SetByte(this.RecordSubtype, destinationByteArray, offset: idx + offset);
             idx += this._valueConverter.SetUint32(this.LastPartTestedTs, destinationByteArray, offset: idx + offset);
 
-            bool havePrevoiusNull = false; // See the summary of WriteAsciiString for more info.
-            idx += this._valueConverter.WriteNullableChar(this.LotDispositionCode, destinationByteArray, offset: idx + offset, havePreviousNull: ref havePrevoiusNull);
-            idx += this._valueConverter.WriteAsciiString(this.LotDescriptionUser, destinationByteArray, offset: idx + offset, havePreviousNull: ref havePrevoiusNull);
-            idx += this._valueConverter.WriteAsciiString(this.LotDescriptionExec, destinationByteArray, offset: idx + offset, havePreviousNull: ref havePrevoiusNull);
+            bool havePreviousNull = false; // See the summary of WriteAsciiString for more info.
+            idx += this._valueConverter.WriteNullableChar(this.LotDispositionCode, destinationByteArray, offset: idx + offset, havePreviousNull: ref havePreviousNull);
+            idx += this._valueConverter.WriteAsciiString(this.LotDescriptionUser, destinationByteArray, offset: idx + offset, havePreviousNull: ref havePreviousNull);
+            idx += this._valueConverter.WriteAsciiString(this.LotDescriptionExec, destinationByteArray, offset: idx + offset, havePreviousNull: ref havePreviousNull);
 
             // Lastly set the length, which is the first field so no + idx with the offset nor to accumulate length.
             this._valueConverter.SetUint16(idx, destinationByteArray, offset: offset);

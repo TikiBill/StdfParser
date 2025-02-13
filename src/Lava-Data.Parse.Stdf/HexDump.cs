@@ -10,7 +10,7 @@ namespace LavaData.Util.Debug
     public class HexDump
     {
 
-        private byte[] _bytes;
+        private readonly byte[] _bytes;
 
         public int BytesPerLine { get; set; } = 16;
 
@@ -82,7 +82,7 @@ namespace LavaData.Util.Debug
             {
                 return "0x00";
             }
-            var bytes = new System.Collections.Generic.List<string>();
+
             var sb = new StringBuilder();
             for (int index = 0; index < this._bytes.Length; index++)
             {

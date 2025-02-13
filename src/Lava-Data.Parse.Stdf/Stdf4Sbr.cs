@@ -3,7 +3,10 @@
 // See the license.txt file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable S101 // pascal naming convention.
+// spell-checker:ignore stdf
 
 // https://www.inheritdoc.io/
 
@@ -12,7 +15,7 @@ namespace LavaData.Parse.Stdf4.Records
     public class SBR : Stdf4Record
     {
         // For DI, so we can convert between big and little-endian.
-        private StdfValueConverter _valueConverter;
+        private readonly StdfValueConverter _valueConverter;
 
         public override string RecordName { get; } = "SBR";
         public override byte RecordType { get; } = 1;
@@ -23,9 +26,11 @@ namespace LavaData.Parse.Stdf4.Records
         public ushort SoftwareBinNumber { get; set; }
         public uint NumberOfPartsInBin { get; set; }
         public char PassFailIndicator { get; set; }
-        public string SoftwareBinName { get; set; }
+        public string? SoftwareBinName { get; set; }
 
-        public SBR() { }
+        public SBR(StdfValueConverter converter){
+            this._valueConverter = converter;
+        }
 
         public SBR(ReadOnlySpan<byte> recordData, StdfValueConverter converter, int offset = 0)
         {

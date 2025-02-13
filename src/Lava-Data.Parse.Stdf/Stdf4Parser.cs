@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 
 #pragma warning disable S125 // remove commented out code.
 #pragma warning disable IDE0290 // Use primary constructor
+#pragma warning disable IDE0130 // folder structure
 
 // spell-checker:ignore stdf eose
 namespace LavaData.Parse.Stdf4

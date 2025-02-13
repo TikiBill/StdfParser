@@ -69,7 +69,7 @@ namespace Lava_Data.Parse.Stdf.Test
             Assert.Equal(referenceMir.TesterType, mir.TesterType);
             Assert.Equal(referenceMir.JobName, mir.JobName);
             Assert.Equal(referenceMir.JobRevision, mir.JobRevision);
-            Assert.Equal(referenceMir.SublotId, mir.SublotId);
+            Assert.Equal(referenceMir.SubLotId, mir.SubLotId);
             Assert.Equal(referenceMir.OperatorId, mir.OperatorId);
             Assert.Equal(referenceMir.ExecutiveType, mir.ExecutiveType);
             Assert.Equal(referenceMir.ExecutiveVersion, mir.ExecutiveVersion);
@@ -89,7 +89,7 @@ namespace Lava_Data.Parse.Stdf.Test
             Assert.Equal(referenceMir.TestFlowId, mir.TestFlowId);
             Assert.Equal(referenceMir.TestSetupId, mir.TestSetupId);
             Assert.Equal(referenceMir.DeviceDesignRev, mir.DeviceDesignRev);
-            Assert.Equal(referenceMir.EngineringLotId, mir.EngineringLotId);
+            Assert.Equal(referenceMir.EngineeringLotId, mir.EngineeringLotId);
             Assert.Equal(referenceMir.RomCodeId, mir.RomCodeId);
             Assert.Equal(referenceMir.TesterSerialNumber, mir.TesterSerialNumber);
             Assert.Equal(referenceMir.SupervisorId, mir.SupervisorId);
@@ -115,7 +115,7 @@ namespace Lava_Data.Parse.Stdf.Test
             Assert.Equal(referenceMir.TesterType, mir.TesterType);
             Assert.Equal(referenceMir.JobName, mir.JobName);
             Assert.Equal(referenceMir.JobRevision, mir.JobRevision);
-            Assert.Equal(referenceMir.SublotId, mir.SublotId);
+            Assert.Equal(referenceMir.SubLotId, mir.SubLotId);
             Assert.Equal(referenceMir.OperatorId, mir.OperatorId);
             Assert.Equal(referenceMir.ExecutiveType, mir.ExecutiveType);
             Assert.Equal(referenceMir.ExecutiveVersion, mir.ExecutiveVersion);
@@ -135,7 +135,7 @@ namespace Lava_Data.Parse.Stdf.Test
             Assert.Equal(referenceMir.TestFlowId, mir.TestFlowId);
             Assert.Equal(referenceMir.TestSetupId, mir.TestSetupId);
             Assert.Equal(referenceMir.DeviceDesignRev, mir.DeviceDesignRev);
-            Assert.Equal(referenceMir.EngineringLotId, mir.EngineringLotId);
+            Assert.Equal(referenceMir.EngineeringLotId, mir.EngineeringLotId);
             Assert.Equal(referenceMir.RomCodeId, mir.RomCodeId);
             Assert.Equal(referenceMir.TesterSerialNumber, mir.TesterSerialNumber);
             Assert.Equal(referenceMir.SupervisorId, mir.SupervisorId);
@@ -184,7 +184,7 @@ namespace Lava_Data.Parse.Stdf.Test
                 TesterType = "TT32",
                 JobName = "Job2",
                 JobRevision = "Rev.5",
-                SublotId = "Sublot7",
+                SubLotId = "Sublot7",
                 OperatorId = "Op4",
                 ExecutiveType = "ET43",
                 ExecutiveVersion = "ETRev2",
@@ -204,7 +204,7 @@ namespace Lava_Data.Parse.Stdf.Test
                 TestFlowId = "Flow T",
                 TestSetupId = "Setup M",
                 DeviceDesignRev = "Design Rev P",
-                EngineringLotId = "EngLot 6",
+                EngineeringLotId = "EngLot 6",
                 RomCodeId = "Rom REM",
                 TesterSerialNumber = "Ser 90",
                 SupervisorId = "Super Person",

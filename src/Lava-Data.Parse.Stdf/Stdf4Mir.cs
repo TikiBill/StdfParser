@@ -3,14 +3,17 @@
 // See the license.txt file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable S101 // pascal naming convention.
+// spell-checker:ignore stdf
 
 namespace LavaData.Parse.Stdf4.Records
 {
     public class MIR : Stdf4Record
     {
         // For DI, so we can convert between big and little-endian.
-        private StdfValueConverter _valueConverter;
+        private readonly StdfValueConverter _valueConverter;
 
         public override string RecordName { get; } = "MIR";
         public override byte RecordType { get; } = 1;
@@ -24,38 +27,36 @@ namespace LavaData.Parse.Stdf4.Records
         public char DataProtectionCode { get; set; }
         public ushort BurnInTimeMinutes { get; set; }
         public char CommandModeCode { get; set; }
-        public string LotId { get; set; }
-        public string ProductId { get; set; }
-        public string NodeName { get; set; }
-        public string TesterType { get; set; }
-        public string JobName { get; set; }
-        public string JobRevision { get; set; }
-        public string SublotId { get; set; }
-        public string OperatorId { get; set; }
-        public string ExecutiveType { get; set; }
-        public string ExecutiveVersion { get; set; }
-        public string TestCode { get; set; }
-        public string TestTemperature { get; set; }
-        public string UserText { get; set; }
-        public string AuxFile { get; set; }
-        public string PackageType { get; set; }
-        public string ProductFamilyId { get; set; }
-        public string DateCode { get; set; }
-        public string TestFacilityId { get; set; }
-        public string TestFloorId { get; set; }
-        public string FabProcessId { get; set; }
-        public string OperationFrequency { get; set; }
-        public string TestSpecName { get; set; }
-        public string TestSpecVersion { get; set; }
-        public string TestFlowId { get; set; }
-        public string TestSetupId { get; set; }
-        public string DeviceDesignRev { get; set; }
-        public string EngineringLotId { get; set; }
-        public string RomCodeId { get; set; }
-        public string TesterSerialNumber { get; set; }
-        public string SupervisorId { get; set; }
-
-        public MIR() { }
+        public string? LotId { get; set; }
+        public string? ProductId { get; set; }
+        public string? NodeName { get; set; }
+        public string? TesterType { get; set; }
+        public string? JobName { get; set; }
+        public string? JobRevision { get; set; }
+        public string? SubLotId { get; set; }
+        public string? OperatorId { get; set; }
+        public string? ExecutiveType { get; set; }
+        public string? ExecutiveVersion { get; set; }
+        public string? TestCode { get; set; }
+        public string? TestTemperature { get; set; }
+        public string? UserText { get; set; }
+        public string? AuxFile { get; set; }
+        public string? PackageType { get; set; }
+        public string? ProductFamilyId { get; set; }
+        public string? DateCode { get; set; }
+        public string? TestFacilityId { get; set; }
+        public string? TestFloorId { get; set; }
+        public string? FabProcessId { get; set; }
+        public string? OperationFrequency { get; set; }
+        public string? TestSpecName { get; set; }
+        public string? TestSpecVersion { get; set; }
+        public string? TestFlowId { get; set; }
+        public string? TestSetupId { get; set; }
+        public string? DeviceDesignRev { get; set; }
+        public string? EngineeringLotId { get; set; }
+        public string? RomCodeId { get; set; }
+        public string? TesterSerialNumber { get; set; }
+        public string? SupervisorId { get; set; }
 
         public MIR(StdfValueConverter converter)
         {
@@ -115,7 +116,7 @@ namespace LavaData.Parse.Stdf4.Records
             this.TesterType = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.JobName = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.JobRevision = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
-            this.SublotId = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
+            this.SubLotId = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.OperatorId = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.ExecutiveType = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.ExecutiveVersion = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
@@ -135,7 +136,7 @@ namespace LavaData.Parse.Stdf4.Records
             this.TestFlowId = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.TestSetupId = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.DeviceDesignRev = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
-            this.EngineringLotId = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
+            this.EngineeringLotId = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.RomCodeId = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.TesterSerialNumber = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
             this.SupervisorId = this._valueConverter.GetStringAndUpdateOffset(recordData, ref offset);
@@ -163,7 +164,7 @@ namespace LavaData.Parse.Stdf4.Records
             len += this.TesterType == null ? 0 : this.TesterType.Length + 1;
             len += this.JobName == null ? 0 : this.JobName.Length + 1;
             len += this.JobRevision == null ? 0 : this.JobRevision.Length + 1;
-            len += this.SublotId == null ? 0 : this.SublotId.Length + 1;
+            len += this.SubLotId == null ? 0 : this.SubLotId.Length + 1;
             len += this.OperatorId == null ? 0 : this.OperatorId.Length + 1;
             len += this.ExecutiveType == null ? 0 : this.ExecutiveType.Length + 1;
             len += this.ExecutiveVersion == null ? 0 : this.ExecutiveVersion.Length + 1;
@@ -183,7 +184,7 @@ namespace LavaData.Parse.Stdf4.Records
             len += this.TestFlowId == null ? 0 : this.TestFlowId.Length + 1;
             len += this.TestSetupId == null ? 0 : this.TestSetupId.Length + 1;
             len += this.DeviceDesignRev == null ? 0 : this.DeviceDesignRev.Length + 1;
-            len += this.EngineringLotId == null ? 0 : this.EngineringLotId.Length + 1;
+            len += this.EngineeringLotId == null ? 0 : this.EngineeringLotId.Length + 1;
             len += this.RomCodeId == null ? 0 : this.RomCodeId.Length + 1;
             len += this.TesterSerialNumber == null ? 0 : this.TesterSerialNumber.Length + 1;
             len += this.SupervisorId == null ? 0 : this.SupervisorId.Length + 1;
@@ -212,37 +213,37 @@ namespace LavaData.Parse.Stdf4.Records
             idx += this._valueConverter.SetUint16(this.BurnInTimeMinutes, destinationByteArray, offset: idx + offset);
             idx += this._valueConverter.SetAsciiChar(this.CommandModeCode, destinationByteArray, offset: idx + offset);
 
-            bool havePrevoiusNull = false; // See the summary of WriteAsciiString for more info.
-            idx += this._valueConverter.WriteAsciiString(this.LotId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.ProductId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.NodeName, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TesterType, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.JobName, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.JobRevision, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.SublotId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.OperatorId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.ExecutiveType, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.ExecutiveVersion, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TestCode, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TestTemperature, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.UserText, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.AuxFile, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.PackageType, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.ProductFamilyId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.DateCode, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TestFacilityId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TestFloorId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.FabProcessId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.OperationFrequency, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TestSpecName, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TestSpecVersion, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TestFlowId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TestSetupId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.DeviceDesignRev, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.EngineringLotId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.RomCodeId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.TesterSerialNumber, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
-            idx += this._valueConverter.WriteAsciiString(this.SupervisorId, destinationByteArray, havePreviousNull: ref havePrevoiusNull, offset: idx + offset);
+            bool havePreviousNull = false; // See the summary of WriteAsciiString for more info.
+            idx += this._valueConverter.WriteAsciiString(this.LotId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.ProductId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.NodeName, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TesterType, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.JobName, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.JobRevision, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.SubLotId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.OperatorId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.ExecutiveType, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.ExecutiveVersion, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TestCode, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TestTemperature, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.UserText, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.AuxFile, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.PackageType, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.ProductFamilyId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.DateCode, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TestFacilityId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TestFloorId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.FabProcessId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.OperationFrequency, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TestSpecName, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TestSpecVersion, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TestFlowId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TestSetupId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.DeviceDesignRev, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.EngineeringLotId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.RomCodeId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.TesterSerialNumber, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
+            idx += this._valueConverter.WriteAsciiString(this.SupervisorId, destinationByteArray, havePreviousNull: ref havePreviousNull, offset: idx + offset);
 
             // Lastly set the length, which is the first field so no + idx with the offset nor to accumulate length.
             // Also note that the first four bytes do not count in the record length value.

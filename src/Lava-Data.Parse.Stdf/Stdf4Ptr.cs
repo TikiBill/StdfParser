@@ -3,7 +3,10 @@
 // See the license.txt file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable S101 // pascal naming convention.
+// spell-checker:ignore stdf
 
 // https://www.inheritdoc.io/
 
@@ -12,7 +15,7 @@ namespace LavaData.Parse.Stdf4.Records
     public class PTR : Stdf4Record
     {
         // For DI, so we can convert between big and little-endian.
-        private StdfValueConverter _valueConverter;
+        private readonly StdfValueConverter _valueConverter;
 
         public override string RecordName { get; } = "PTR";
         public override byte RecordType { get; } = 15;
@@ -26,22 +29,24 @@ namespace LavaData.Parse.Stdf4.Records
 
         public byte ParametricTestFlags { get; set; }
         public float TestResult { get; set; }
-        public string TestDescription { get; set; }
-        public string AlarmName { get; set; }
+        public string? TestDescription { get; set; }
+        public string? AlarmName { get; set; }
         public byte OptionalDataFlag { get; set; }
         public sbyte TestResultsScalingExponent { get; set; } //OptionalDataFlag bit 0 == 1
         public sbyte LowLimitScalingExponent { get; set; } //OptionalDataFlag bit 4 or 6 == 1
         public sbyte HighLimitScalingExponent { get; set; } //OptionalDataFlag bit 5 or 7 == 1
         public float LowTestLimit { get; set; } //OptionalDataFlag bit 4 or 6 == 1
         public float HighTestLimit { get; set; } //OptionalDataFlag bit 5 or 7 == 1
-        public string TestUnits { get; set; }
-        public string FormatStringResult { get; set; }
-        public string FormatStringLowLimit { get; set; }
-        public string FormatStringHighLimit { get; set; }
+        public string? TestUnits { get; set; }
+        public string? FormatStringResult { get; set; }
+        public string? FormatStringLowLimit { get; set; }
+        public string? FormatStringHighLimit { get; set; }
         public float LowSpecLimit { get; set; } //OptionalDataFlag bit 2 == 1
         public float HighSpecLimit { get; set; } //OptionalDataFlag bit 3 == 1
 
-        public PTR() { }
+        public PTR(StdfValueConverter converter){
+            this._valueConverter = converter;
+        }
 
         public PTR(ReadOnlySpan<byte> recordData, StdfValueConverter converter, int offset = 0)
         {

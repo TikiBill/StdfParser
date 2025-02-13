@@ -3,6 +3,9 @@
 // See the license.txt file in the project root for more information.
 
 using System;
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable S101 // pascal naming convention.
+// spell-checker:ignore stdf
 
 namespace LavaData.Parse.Stdf4.Records
 {
@@ -321,7 +324,7 @@ namespace LavaData.Parse.Stdf4.Records
         /// <param name="data"></param>
         /// <param name="offset">Index in the data, updated after the string read.</param>
         /// <returns>The string.</returns>
-        public string GetStringAndUpdateOffset(ReadOnlySpan<byte> data, ref int offset)
+        public string? GetStringAndUpdateOffset(ReadOnlySpan<byte> data, ref int offset)
         {
             if (offset >= data.Length)
             {
@@ -377,9 +380,9 @@ namespace LavaData.Parse.Stdf4.Records
         /// <param name="havePreviousNull">ref to flag if we have seen a null property.</param>
         /// <param name="offset">Offset into the byte array. Optional, default 0.</param>
         /// <returns>The number of bytes written.</returns>
-        public ushort WriteAsciiString(string value, byte[] intoData, ref bool havePreviousNull, int offset = 0)
+        public ushort WriteAsciiString(string? value, byte[] intoData, ref bool havePreviousNull, int offset = 0)
         {
-            if (value == null)
+            if (value is null)
             {
                 havePreviousNull = true;
                 return 0; //Nothing written.

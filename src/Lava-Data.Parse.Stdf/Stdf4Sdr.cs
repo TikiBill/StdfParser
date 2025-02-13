@@ -3,7 +3,10 @@
 // See the license.txt file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable S101 // pascal naming convention.
+// spell-checker:ignore stdf
 
 // https://www.inheritdoc.io/
 
@@ -13,7 +16,7 @@ namespace LavaData.Parse.Stdf4.Records
     {
 
         // For DI, so we can convert between big and little-endian.
-        private StdfValueConverter _valueConverter;
+        private readonly StdfValueConverter _valueConverter;
 
         public override string RecordName { get; } = "SDR";
         public override byte RecordType { get; } = 1;
@@ -22,25 +25,27 @@ namespace LavaData.Parse.Stdf4.Records
         public byte TestHeadNumber { get; set; }
         public byte SiteGroupNumber { get; set; }
         public byte NumberTestSitesInGroup { get; set; }
-        public byte[] SiteNumbers { get; set; }
-        public string HandlerType { get; set; }
-        public string HandlerId { get; set; }
-        public string ProbeCardType { get; set; }
-        public string ProbeCardId { get; set; }
-        public string LoadBoardType { get; set; }
-        public string LoadBoardId { get; set; }
-        public string DibBoardType { get; set; }
-        public string DibBoardId { get; set; }
-        public string InterfaceCableType { get; set; }
-        public string InterfaceCableId { get; set; }
-        public string HandlerContactorType { get; set; }
-        public string HandlerContactId { get; set; }
-        public string LaserType { get; set; }
-        public string LaserId { get; set; }
-        public string ExtraEquipmentType { get; set; }
-        public string ExtraEquipmentId { get; set; }
+        public byte[]? SiteNumbers { get; set; }
+        public string? HandlerType { get; set; }
+        public string? HandlerId { get; set; }
+        public string? ProbeCardType { get; set; }
+        public string? ProbeCardId { get; set; }
+        public string? LoadBoardType { get; set; }
+        public string? LoadBoardId { get; set; }
+        public string? DibBoardType { get; set; }
+        public string? DibBoardId { get; set; }
+        public string? InterfaceCableType { get; set; }
+        public string? InterfaceCableId { get; set; }
+        public string? HandlerContactorType { get; set; }
+        public string? HandlerContactId { get; set; }
+        public string? LaserType { get; set; }
+        public string? LaserId { get; set; }
+        public string? ExtraEquipmentType { get; set; }
+        public string? ExtraEquipmentId { get; set; }
 
-        public SDR() { }
+        public SDR(StdfValueConverter converter){
+            this._valueConverter = converter;
+        }
 
         public SDR(ReadOnlySpan<byte> recordData, StdfValueConverter converter, int offset = 0)
         {

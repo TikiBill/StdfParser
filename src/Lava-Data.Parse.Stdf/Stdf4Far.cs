@@ -3,7 +3,10 @@
 // See the license.txt file in the project root for more information.
 
 using System;
-using System.Runtime.Serialization;
+
+#pragma warning disable IDE0130 // folder structure
+#pragma warning disable S101 // pascal naming convention.
+// spell-checker:ignore stdf
 
 // https://www.inheritdoc.io/
 
@@ -12,7 +15,7 @@ namespace LavaData.Parse.Stdf4.Records
     public class FAR : Stdf4Record
     {
         // For DI, so we can convert between big and little-endian.
-        private StdfValueConverter _valueConverter;
+        private readonly StdfValueConverter _valueConverter;
 
         public override string RecordName { get; } = "FAR";
         public override byte RecordType { get; } = 0;
@@ -21,8 +24,6 @@ namespace LavaData.Parse.Stdf4.Records
         public byte CpuType { get; set; } = BitConverter.IsLittleEndian ? (byte)2 : (byte)1;
 
         public byte StdfVersion { get; set; } = 4;
-
-        public FAR() { }
 
         public FAR(StdfValueConverter converter)
         {
