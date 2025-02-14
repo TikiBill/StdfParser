@@ -239,6 +239,10 @@ namespace LavaData.Parse.Stdf4
                                 rec = new PRR(bytes, converter);
                                 break;
 
+                            case Stdf4RecordType.ATR:
+                                this.NoteIgnoredRecord("EPS");
+                                break;
+
                             case Stdf4RecordType.EPS:
                                 this.NoteIgnoredRecord("EPS");
                                 break;
