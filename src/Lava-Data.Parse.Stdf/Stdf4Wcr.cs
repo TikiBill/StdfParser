@@ -68,7 +68,7 @@ namespace LavaData.Parse.Stdf4.Records
             this.Parse(recordData, offset);
         }
 
-        public override string ToString() => $"{this.RecordName}   WaferDiameter {this.WaferDiameter}    Die Size {this.DieWidth} x {this.DieHeight}";
+        public override string ToString() => $"{this.RecordName}   WaferDiameter: {this.WaferDiameter}    Die Size: {this.DieWidth} x {this.DieHeight}";
 
         public WCR Parse(byte[] recordData, int offset = 0, byte cpuType = 2)
         {
@@ -77,16 +77,20 @@ namespace LavaData.Parse.Stdf4.Records
 
         public WCR Parse(ReadOnlySpan<byte> recordData, int offset = 0, byte cpuType = 2)
         {
-            bool valid;
-            (this.WaferDiameter, valid) = this._valueConverter.GetSingleAndUpdateOffset(recordData, ref offset);
-            (this.DieHeight, valid) = this._valueConverter.GetSingleAndUpdateOffset(recordData, ref offset);
-            (this.DieWidth, valid) = this._valueConverter.GetSingleAndUpdateOffset(recordData, ref offset);
+            (this.WaferDiameter, _) = this._valueConverter.GetSingleAndUpdateOffset(recordData, ref offset);
+            (this.DieHeight, _) = this._valueConverter.GetSingleAndUpdateOffset(recordData, ref offset);
+            (this.DieWidth, _) = this._valueConverter.GetSingleAndUpdateOffset(recordData, ref offset);
 
             this.UnitsCode = recordData[offset];
             offset += 1;
 
             this.FlatLocation = (char)recordData[offset];
             offset += 1;
+
+            if(offset >= recordData.Length)
+            {
+                return this;
+            }
 
             this.CenterDieX = this._valueConverter.GetInt16AndUpdateOffset(recordData, ref offset);
             this.CenterDieY = this._valueConverter.GetInt16AndUpdateOffset(recordData, ref offset);
@@ -95,7 +99,6 @@ namespace LavaData.Parse.Stdf4.Records
             offset += 1;
 
             this.PosDirectionY = (char)recordData[offset];
-            offset += 1;
 
             return this;
         }

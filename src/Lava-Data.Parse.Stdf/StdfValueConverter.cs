@@ -136,6 +136,9 @@ namespace LavaData.Parse.Stdf4.Records
         }
 
 
+        /// <summary>
+        /// Take two bytes and return an int16.
+        /// </summary.
         public short GetInt16AndUpdateOffset(ReadOnlySpan<byte> data, ref int offset)
         {
             short value = BitConverter.ToInt16(this.GetTwoBytes(data, offset), 0);
@@ -209,6 +212,9 @@ namespace LavaData.Parse.Stdf4.Records
             return value;
         }
 
+        /// <summary>
+        /// Take four bytes and return a float.
+        /// </summary>
         public (float, bool) GetSingleAndUpdateOffset(ReadOnlySpan<byte> data, ref int offset)
         {
             if (offset + 4 > data.Length)
@@ -220,6 +226,21 @@ namespace LavaData.Parse.Stdf4.Records
             float value = BitConverter.ToSingle(this.GetFourBytes(data, offset), 0);
             offset += 4;
             return (value, true);
+        }
+
+        /// <summary>
+        /// Take four bytes and return a float.
+        /// </summary>
+        public float? GetNullableSingleAndUpdateOffset(ReadOnlySpan<byte> data, ref int offset)
+        {
+            if (offset + 4 > data.Length)
+            {
+                return null;
+            }
+
+            float value = BitConverter.ToSingle(this.GetFourBytes(data, offset), 0);
+            offset += 4;
+            return value;
         }
 
 
@@ -316,6 +337,27 @@ namespace LavaData.Parse.Stdf4.Records
             return 4;
         }
 
+        public ushort SetSingle(float value, byte[] intoData, int offset = 0)
+        {
+            // Using shift does not work without special checks and
+            // manipulation because it does not account for endianness.
+            byte[] bytes = BitConverter.GetBytes(value);
+            if (this.ReverseBytesOnWrite)
+            {
+                intoData[offset + 0] = bytes[3];
+                intoData[offset + 1] = bytes[2];
+                intoData[offset + 2] = bytes[1];
+                intoData[offset + 3] = bytes[0];
+            }
+            else
+            {
+                intoData[offset + 0] = bytes[0];
+                intoData[offset + 1] = bytes[1];
+                intoData[offset + 2] = bytes[2];
+                intoData[offset + 3] = bytes[3];
+            }
+            return 4;
+        }
 
         /// <summary>
         /// Get a string from an STDF record, and update the passed offset.
@@ -475,9 +517,9 @@ namespace LavaData.Parse.Stdf4.Records
             }
         }
 
-        public ushort WriteAsciiString(string value, byte[] intoData, int offset = 0)
+        public ushort WriteAsciiString(string? value, byte[] intoData, int offset = 0)
         {
-            if (value == null)
+            if (value is null)
             {
                 intoData[offset + 0] = 0;
                 return 1;

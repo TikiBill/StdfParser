@@ -52,7 +52,7 @@ namespace LavaData.Parse.Stdf4.Records
             this.Parse(recordData, offset);
         }
 
-        public override string ToString() => $"{this.RecordName}   Wafer {this.WaferId}    Frame {this.WaferFrameId}    Mask {this.WaferMaskId}";
+        public override string ToString() => $"{this.RecordName}   Wafer: {this.WaferId}    Frame: {this.WaferFrameId}    Mask: {this.WaferMaskId}";
 
         public WRR Parse(byte[] recordData, byte cpuType = 2)
         {

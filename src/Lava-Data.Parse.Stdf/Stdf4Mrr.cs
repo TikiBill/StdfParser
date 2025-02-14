@@ -3,6 +3,7 @@
 // See the license.txt file in the project root for more information.
 
 using System;
+using System.Text;
 
 #pragma warning disable IDE0130 // folder structure
 #pragma warning disable S101 // pascal naming convention.
@@ -42,7 +43,18 @@ namespace LavaData.Parse.Stdf4.Records
             this.Parse(recordData, offset);
         }
 
-        public override string ToString() => $"{this.RecordName}   Disposition {this.LotDispositionCode}    UserDescription {this.LotDescriptionUser}    ExecDescription {this.LotDescriptionExec}";
+        public override string ToString() => $"{this.RecordName}   Disposition: {this.LotDispositionCode}    UserDescription: {this.LotDescriptionUser}    ExecDescription: {this.LotDescriptionExec}";
+
+        public string ToMultilineString()
+        {
+            // Abusing StringBuilder by contacting in the method call.
+            var sb = new StringBuilder();
+            sb.AppendLine("  LastPartTestedTs: " + this.LastPartTestedTs);
+            sb.AppendLine("LotDispositionCode: " + this.LotDispositionCode);
+            sb.AppendLine("LotDescriptionUser: " + this.LotDescriptionUser);
+            sb.AppendLine("LotDescriptionExec: " + this.LotDescriptionExec);
+            return sb.ToString();
+        }
 
         public MRR Parse(byte[] recordData)
         {
@@ -92,6 +104,5 @@ namespace LavaData.Parse.Stdf4.Records
             this._valueConverter.SetUint16(idx, destinationByteArray, offset: offset);
             return idx;
         }
-
     }
 }

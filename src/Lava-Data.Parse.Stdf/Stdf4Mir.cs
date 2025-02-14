@@ -147,8 +147,8 @@ namespace LavaData.Parse.Stdf4.Records
 
         public override string ToString()
         {
-            return $"MIR  StartTS {this.StartTimeStamp}  Station {this.StationNumber}  TestMode {this.TestModeCode}"
-            + $"  LotId {this.LotId}  ProductId {this.ProductId}";
+            return $"MIR  StartTS: {this.StartTimeStamp}  Station: {this.StationNumber}  TestMode: {this.TestModeCode}"
+            + $"  LotId: {this.LotId}  ProductId: {this.ProductId}";
         }
 
 

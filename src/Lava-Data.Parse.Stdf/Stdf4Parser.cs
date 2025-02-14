@@ -50,9 +50,12 @@ namespace LavaData.Parse.Stdf4
         /// The counts of those are noted in this dictionary in case one wants
         /// some insight to such ignored records.
         /// </summary>
-        public Dictionary<string,int> IgnoredRecordTypeCount {get;} = [];
+        public Dictionary<string, int> IgnoredRecordTypeCount { get; } = [];
 
         public List<Stdf4Record> Records { get; }
+
+        // e.g. (int)Stdf4RecordType.WCR
+        public int DebugRecordType { get; set; } = (int)Stdf4RecordType.WCR;
 
         public bool Verbose { get; set; } = false;
 
@@ -95,7 +98,7 @@ namespace LavaData.Parse.Stdf4
 
         public void NoteIgnoredRecord(string stdfRecordType)
         {
-            if(!this.IgnoredRecordTypeCount.ContainsKey(stdfRecordType))
+            if (!this.IgnoredRecordTypeCount.ContainsKey(stdfRecordType))
             {
                 this.IgnoredRecordTypeCount.Add(stdfRecordType, 0);
             }
@@ -199,14 +202,14 @@ namespace LavaData.Parse.Stdf4
                         continue;
                     }
 
-                    if (this._debugLevel >= 3 || (this.Verbose && stdfMajorType != 5 && stdfMajorType != 10 && stdfMajorType != 15))
+                    if (stdfRecordType == this.DebugRecordType || this._debugLevel >= 3 || (this.Verbose && stdfMajorType != 5 && stdfMajorType != 10 && stdfMajorType != 15))
                     {
                         Console.WriteLine(string.Empty);
                         Console.WriteLine($"  Record {recordNumber} is {recordLength} bytes long (0x{recordLength:X2}) of type {stdfMajorType} - {stdfMinorType} ({stdfRecordType}).");
-                        if (this._debugLevel > 0)
+                        if (this._debugLevel > 0 || stdfRecordType == this.DebugRecordType)
                         {
                             Console.Write((new LavaData.Util.Debug.HexDump(bytes)).ToString());
-                            if (this._debugLevel > 1)
+                            if (this._debugLevel > 1 || stdfRecordType == this.DebugRecordType)
                             {
                                 // We want the record length and record type/sub-type.
                                 var newBytes = new byte[bytes.Length + 4];
@@ -240,7 +243,7 @@ namespace LavaData.Parse.Stdf4
                                 break;
 
                             case Stdf4RecordType.ATR:
-                                this.NoteIgnoredRecord("EPS");
+                                this.NoteIgnoredRecord("ATR");
                                 break;
 
                             case Stdf4RecordType.EPS:
@@ -255,16 +258,19 @@ namespace LavaData.Parse.Stdf4
                                 var far = new FAR(bytes, converter);
                                 converter.CpuType = far.CpuType;
                                 this.ReverseBytesOnRead = converter.ReverseBytesOnRead;
-                                rec = far;
+                                rec = far;                                
+                                this._logger.LogDebug("FAR: {Far}", far.ToString()); // STDF Version: {Version}    CPU Type: {CpuType}", far.StdfVersion, far.CpuType);
                                 break;
 
                             //Data collected on a per lot basis; 1-NN Records
                             case Stdf4RecordType.MIR:
                                 rec = new MIR(bytes, converter);
+                                this._logger.LogDebug("MIR: {Mir}", rec.ToString());
                                 break;
 
                             case Stdf4RecordType.MRR:
                                 rec = new MRR(bytes, converter);
+                                this._logger.LogDebug("MRR: {Mrr}", rec.ToString());
                                 break;
 
                             case Stdf4RecordType.PCR:
@@ -301,21 +307,22 @@ namespace LavaData.Parse.Stdf4
                             // Data collected per Wafer; 2-NN Records.
                             case Stdf4RecordType.WIR:
                                 rec = new WIR(bytes, converter);
+                                this._logger.LogDebug("WIR: {Wir}", rec.ToString());                                
                                 break;
 
                             case Stdf4RecordType.WRR:
                                 rec = new WRR(bytes, converter);
+                                this._logger.LogDebug("WRR: {Wrr}", rec.ToString());                                
                                 break;
 
                             case Stdf4RecordType.WCR:
                                 rec = new WCR(bytes, converter);
+                                this._logger.LogDebug("WCR: {Wcr}", rec.ToString());                                
                                 break;
 
                             case Stdf4RecordType.TSR:
-                                this.NoteIgnoredRecord("TSR");
-                                //throw new Stdf4ParserException("TSR  Not Implemented");
+                                rec = new TSR(bytes, converter);
                                 break;
-
 
                             // Generic Data; 50-NN Records.
                             case Stdf4RecordType.GDR:
@@ -339,7 +346,7 @@ namespace LavaData.Parse.Stdf4
                             if (this._debugLevel >= 3 || (this.Verbose && stdfRecordType != 1300))
                             {
                                 // Don't print PRR (1300), lots of them, except at a high debug level.
-                                Console.WriteLine(rec.ToString());
+                                this._logger.LogInformation("{RecName}: {StringValue}", rec.RecordName, rec.ToString());
                             }
 
                             if (!this.OnlyParse)
