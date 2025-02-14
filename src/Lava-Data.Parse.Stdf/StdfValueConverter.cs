@@ -102,6 +102,11 @@ namespace LavaData.Parse.Stdf4.Records
         /// </summary>
         public byte[] GetTwoBytes(ReadOnlySpan<byte> data, int offset = 0)
         {
+            if (offset + 1 >= data.Length)
+            {
+                throw new Stdf4ParserException($"Data length is {data.Length} but trying to get a value from {offset+1}");
+            }
+
             if (this.ReverseBytesOnRead)
             {
                 (TwoBytes[0], TwoBytes[1]) = (data[offset + 1], data[offset + 0]);
