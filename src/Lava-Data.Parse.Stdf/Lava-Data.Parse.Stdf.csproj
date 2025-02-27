@@ -6,7 +6,7 @@
     <LangVersion>latest</LangVersion>
 
     <RootNamespace>LavaData.Parse.Stdf</RootNamespace>
-    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionPrefix>0.1.1</VersionPrefix>
     <Company>Lava-Data</Company>
     <AssemblyTitle>Lava-Data STDF4 Parser</AssemblyTitle>
     <Description>Parses an STDF4 file into strongly type representations of each record type.</Description>

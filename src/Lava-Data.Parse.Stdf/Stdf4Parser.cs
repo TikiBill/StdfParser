@@ -80,18 +80,20 @@ namespace LavaData.Parse.Stdf4
         public string InputFile { get; }
         public bool IsStateValid { get; private set; }
         public string? InvalidStateMessage { get; private set; }
+        private readonly BinaryReader? _externalReader;
 
-        public Stdf4Parser(ILoggerFactory loggerFactory, string inputFile)
+        public Stdf4Parser(ILoggerFactory loggerFactory, string inputFile, BinaryReader? reader = null)
         {
             this._logger = loggerFactory.CreateLogger(nameof(Stdf4Parser));
             this.InputFile = inputFile;
+            this._externalReader = reader;
             this.Records = new(_initialListCapacity);
             this.IsStateValid = false;
             this.InvalidStateMessage = "Parse not called yet.";
         }
 
-        public Stdf4Parser(string inputFile)
-            : this(Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, inputFile)
+        public Stdf4Parser(string inputFile, BinaryReader? reader = null)
+            : this(Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory.Instance, inputFile, reader)
         {
 
         }
@@ -107,7 +109,20 @@ namespace LavaData.Parse.Stdf4
 
         public bool TryParse()
         {
-            if (!File.Exists(this.InputFile))
+            if (this._externalReader is not null)
+            {
+                try
+                {
+                    return this.TryParse(this._externalReader);
+                }
+                catch (Exception ex)
+                {
+                    this.IsStateValid = false;
+                    this.InvalidStateMessage = $"Got an exception parsing: {ex.Message}";
+                    return false;
+                }
+            }
+            else if (!File.Exists(this.InputFile))
             {
                 this.IsStateValid = false;
                 this.InvalidStateMessage = "The input file does not exist.";
@@ -258,7 +273,7 @@ namespace LavaData.Parse.Stdf4
                                 var far = new FAR(bytes, converter);
                                 converter.CpuType = far.CpuType;
                                 this.ReverseBytesOnRead = converter.ReverseBytesOnRead;
-                                rec = far;                                
+                                rec = far;
                                 this._logger.LogDebug("FAR: {Far}", far.ToString()); // STDF Version: {Version}    CPU Type: {CpuType}", far.StdfVersion, far.CpuType);
                                 break;
 
@@ -307,17 +322,17 @@ namespace LavaData.Parse.Stdf4
                             // Data collected per Wafer; 2-NN Records.
                             case Stdf4RecordType.WIR:
                                 rec = new WIR(bytes, converter);
-                                this._logger.LogDebug("WIR: {Wir}", rec.ToString());                                
+                                this._logger.LogDebug("WIR: {Wir}", rec.ToString());
                                 break;
 
                             case Stdf4RecordType.WRR:
                                 rec = new WRR(bytes, converter);
-                                this._logger.LogDebug("WRR: {Wrr}", rec.ToString());                                
+                                this._logger.LogDebug("WRR: {Wrr}", rec.ToString());
                                 break;
 
                             case Stdf4RecordType.WCR:
                                 rec = new WCR(bytes, converter);
-                                this._logger.LogDebug("WCR: {Wcr}", rec.ToString());                                
+                                this._logger.LogDebug("WCR: {Wcr}", rec.ToString());
                                 break;
 
                             case Stdf4RecordType.TSR:
