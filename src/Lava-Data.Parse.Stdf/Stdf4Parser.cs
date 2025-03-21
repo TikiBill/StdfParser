@@ -32,6 +32,8 @@ namespace LavaData.Parse.Stdf4
         /// </summary>
         public bool OnlyParse { get; set; } = false;
 
+        public Stdf4RecordType? StopAfterRecordType { get; set; }
+
         /// <summary>
         /// The initial capacity of the list used to store the
         /// records. Set this to a reasonable value a little larger
@@ -157,9 +159,16 @@ namespace LavaData.Parse.Stdf4
 
             try
             {
+                Stdf4RecordType? recordType = null;
                 ushort recordLength;
                 while (true)
                 {
+                    if (this.StopAfterRecordType is not null && recordType is not null
+                        && this.StopAfterRecordType == recordType)
+                    {
+                        break;
+                    }
+
                     if (this.ReverseBytesOnRead)
                     {
                         this._twoBytes[1] = reader.ReadByte();
@@ -194,6 +203,7 @@ namespace LavaData.Parse.Stdf4
                     }
                     else if (stdfRecordType == 3850)
                     {
+                        recordType = Stdf4RecordType.PTR;
                         if (this.OnlyParse)
                         {
                             _ = new PTR(bytes, converter);
@@ -206,6 +216,7 @@ namespace LavaData.Parse.Stdf4
                     }
                     else if (stdfRecordType == 1290)
                     {
+                        recordType = Stdf4RecordType.PIR;
                         if (this.OnlyParse)
                         {
                             _ = new PIR(bytes, converter);
@@ -240,7 +251,7 @@ namespace LavaData.Parse.Stdf4
                     rec = null;
                     if (Enum.IsDefined(typeof(Stdf4RecordType), stdfRecordType))
                     {
-                        Stdf4RecordType recordType = (Stdf4RecordType)stdfRecordType;
+                        recordType = (Stdf4RecordType)stdfRecordType;
                         switch ((Stdf4RecordType)stdfRecordType)
                         {
                             case Stdf4RecordType.PTR:
