@@ -107,13 +107,13 @@ namespace LavaData.Parse.Stdf4
             this.IgnoredRecordTypeCount[stdfRecordType] += 1;
         }
 
-        public bool TryParse()
+        public bool TryParse(Stdf4RecordType stopAfterFirstRecordType = Stdf4RecordType.NUL)
         {
             if (this._externalReader is not null)
             {
                 try
                 {
-                    return this.TryParse(this._externalReader);
+                    return this.TryParse(this._externalReader, stopAfterFirstRecordType);
                 }
                 catch (Exception ex)
                 {
@@ -133,7 +133,7 @@ namespace LavaData.Parse.Stdf4
             try
             {
                 using var reader = new BinaryReader(File.Open(this.InputFile, FileMode.Open));
-                return this.TryParse(reader);
+                return this.TryParse(reader, stopAfterFirstRecordType);
             }
             catch (Exception ex)
             {
