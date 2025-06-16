@@ -2,6 +2,7 @@
 // Bill Adams licenses this file to you under the MIT license.
 // See the license.txt file in the project root for more information.
 
+#pragma warning disable S2437 // Remove this unnecessary bit operation. baa: It is there to be explicit.
 namespace LavaData.Parse.Stdf4
 {
     public enum Stdf4RecordType

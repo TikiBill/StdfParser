@@ -12,6 +12,7 @@ namespace LavaData.Parse.Stdf4.Records
     /// </summary>
     public abstract class Stdf4Record
     {
+        public abstract Stdf4RecordType Stdf4RecordType { get; }
         public abstract string RecordName { get; }
         public abstract byte RecordType { get; }
         public abstract byte RecordSubtype { get; }

@@ -17,6 +17,7 @@ namespace LavaData.Parse.Stdf4.Records
         // For DI, so we can convert between big and little-endian.
         private readonly StdfValueConverter _valueConverter;
 
+        public override Stdf4RecordType Stdf4RecordType { get; } = Stdf4RecordType.WCR;
         public override string RecordName { get; } = "WCR";
         public override byte RecordType { get; } = 2;
         public override byte RecordSubtype { get; } = 30;
@@ -52,7 +53,8 @@ namespace LavaData.Parse.Stdf4.Records
         public char PosDirectionX { get; set; }
         public char PosDirectionY { get; set; }
 
-        public WCR(StdfValueConverter converter){
+        public WCR(StdfValueConverter converter)
+        {
             this._valueConverter = converter;
         }
 
@@ -87,7 +89,7 @@ namespace LavaData.Parse.Stdf4.Records
             this.FlatLocation = (char)recordData[offset];
             offset += 1;
 
-            if(offset >= recordData.Length)
+            if (offset >= recordData.Length)
             {
                 return this;
             }

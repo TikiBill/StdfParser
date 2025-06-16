@@ -16,13 +16,15 @@ namespace LavaData.Parse.Stdf4.Records
     {
         private readonly StdfValueConverter _valueConverter;
 
+        public override Stdf4RecordType Stdf4RecordType { get; } = Stdf4RecordType.DTR;
         public override string RecordName { get; } = "DTR";
         public override byte RecordType { get; } = 50;
         public override byte RecordSubtype { get; } = 30;
 
         public string? Text { get; set; }
 
-        public DTR(StdfValueConverter converter){
+        public DTR(StdfValueConverter converter)
+        {
             this._valueConverter = converter;
         }
 

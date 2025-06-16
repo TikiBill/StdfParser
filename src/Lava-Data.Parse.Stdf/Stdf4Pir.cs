@@ -17,6 +17,7 @@ namespace LavaData.Parse.Stdf4.Records
         // For DI, so we can convert between big and little-endian.
         private readonly StdfValueConverter _valueConverter;
 
+        public override Stdf4RecordType Stdf4RecordType { get; } = Stdf4RecordType.PIR;
         public override string RecordName { get; } = "PIR";
         public override byte RecordType { get; } = 5;
         public override byte RecordSubtype { get; } = 10;
@@ -24,7 +25,8 @@ namespace LavaData.Parse.Stdf4.Records
         public byte TestHeadNumber { get; set; }
         public byte TestSiteNumber { get; set; }
 
-        public PIR(StdfValueConverter converter){
+        public PIR(StdfValueConverter converter)
+        {
             this._valueConverter = converter;
         }
 

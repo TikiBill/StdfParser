@@ -17,6 +17,7 @@ namespace LavaData.Parse.Stdf4.Records
         // For DI, so we can convert between big and little-endian.
         private readonly StdfValueConverter _valueConverter;
 
+        public override Stdf4RecordType Stdf4RecordType { get; } = Stdf4RecordType.WRR;
         public override string RecordName { get; } = "WRR";
         public override byte RecordType { get; } = 2;
         public override byte RecordSubtype { get; } = 10;
@@ -36,7 +37,8 @@ namespace LavaData.Parse.Stdf4.Records
         public string? WaferDescriptionUser { get; set; }
         public string? WaferDescriptionExec { get; set; }
 
-        public WRR(StdfValueConverter converter){
+        public WRR(StdfValueConverter converter)
+        {
             this._valueConverter = converter;
         }
 
