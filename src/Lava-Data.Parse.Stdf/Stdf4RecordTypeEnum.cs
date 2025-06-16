@@ -8,6 +8,11 @@ namespace LavaData.Parse.Stdf4
     public enum Stdf4RecordType
     {
         /// <summary>
+        /// Internal type to prevent unboxing when we are stopping at a specific record type.
+        /// </summary>
+        NUL = 0,
+
+        /// <summary>
         /// File Attributes Record (FAR) 0 - 10
         /// </summary>
         FAR = (0 << 8) | 10,

@@ -32,8 +32,6 @@ namespace LavaData.Parse.Stdf4
         /// </summary>
         public bool OnlyParse { get; set; } = false;
 
-        public Stdf4RecordType? StopAfterRecordType { get; set; }
-
         /// <summary>
         /// The initial capacity of the list used to store the
         /// records. Set this to a reasonable value a little larger
@@ -147,7 +145,7 @@ namespace LavaData.Parse.Stdf4
 
 
 #pragma warning disable S3776 // Refactor this method to reduce its Cognitive Complexity from 55 to the 15 allowed.
-        public bool TryParse(BinaryReader reader)
+        public bool TryParse(BinaryReader reader, Stdf4RecordType stopAfterFirstRecordType = Stdf4RecordType.NUL)
         {
             int pos = 0;
             int recordNumber = 0;
@@ -157,14 +155,16 @@ namespace LavaData.Parse.Stdf4
             this.IsStateValid = true; // Until we have an error.
             this.InvalidStateMessage = string.Empty;
 
+            this.Records.Clear();
+
             try
             {
-                Stdf4RecordType? recordType = null;
+                // Do not use nullable here to prevent unboxing on the stop check below.
+                Stdf4RecordType recordType = Stdf4RecordType.NUL;
                 ushort recordLength;
                 while (true)
                 {
-                    if (this.StopAfterRecordType is not null && recordType is not null
-                        && this.StopAfterRecordType == recordType)
+                    if (recordNumber > 0 && recordType == stopAfterFirstRecordType)
                     {
                         break;
                     }
