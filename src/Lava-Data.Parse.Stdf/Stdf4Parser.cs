@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using LavaData.Parse.Stdf4.Records;
 using Microsoft.Extensions.Logging;
 
@@ -109,6 +110,7 @@ namespace LavaData.Parse.Stdf4
 
         public bool TryParse(Stdf4RecordType stopAfterFirstRecordType = Stdf4RecordType.NUL)
         {
+            const string methodName = nameof(TryParse);
             if (this._externalReader is not null)
             {
                 try
@@ -129,10 +131,39 @@ namespace LavaData.Parse.Stdf4
                 return false;
             }
 
-            this._logger.LogInformation("Read {InputFile}", this.InputFile);
+            FileStream? fileStream = null;
+            BinaryReader? reader = null;
             try
             {
-                using var reader = new BinaryReader(File.Open(this.InputFile, FileMode.Open));
+                switch (Path.GetExtension(this.InputFile).ToLower())
+                {
+                    case ".zip":
+                        this.InvalidStateMessage = "Zip reading not yet implemented.";
+                        this.IsStateValid = false;
+                        return false;
+                    case ".gz":
+                        fileStream = File.Open(this.InputFile, FileMode.Open);
+                        reader = new BinaryReader(new GZipStream(fileStream, CompressionMode.Decompress));
+                        break;
+                    case ".std":
+                    case ".stdf":
+                        reader = new BinaryReader(File.Open(this.InputFile, FileMode.Open));
+                        break;
+                    default:
+                        this._logger.LogWarning("{MethodName} - Unknown extension {Extension}, assuming an uncompressed STDF. ({InputFile})",
+                            methodName, Path.GetExtension(this.InputFile), this.InputFile);
+                        reader = new BinaryReader(File.Open(this.InputFile, FileMode.Open));
+                        break;
+                }
+
+                if (reader is null)
+                {
+                    this.IsStateValid = false;
+                    this.InvalidStateMessage = $"Failed to open a reader for {this.InputFile}";
+                    return false;
+                }
+
+                this._logger.LogInformation("Read {InputFile}", this.InputFile);
                 return this.TryParse(reader, stopAfterFirstRecordType);
             }
             catch (Exception ex)
@@ -140,6 +171,11 @@ namespace LavaData.Parse.Stdf4
                 this.IsStateValid = false;
                 this.InvalidStateMessage = $"Got an exception parsing: {ex.Message}";
                 return false;
+            }
+            finally
+            {
+                reader?.Dispose();
+                fileStream?.Dispose();
             }
         }
 
@@ -404,6 +440,6 @@ namespace LavaData.Parse.Stdf4
 
             return this.IsStateValid;
         }
-#pragma warning restore S3776 
+#pragma warning restore S3776
     }
 }
