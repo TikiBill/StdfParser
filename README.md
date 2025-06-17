@@ -4,6 +4,8 @@ A c#/.NET Core library to read and write STDF4 files. This just makes a list/str
 of records which another library or program should consume and process
 into the desired data structures.
 
+> NOTE: This is in early development and as such the API and behavior may change.
+
 ## Current State
 
 The initial version of this library was developed against some example
